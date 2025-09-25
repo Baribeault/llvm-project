@@ -2,14 +2,14 @@ package com.nexsan.crypto
 
 import java.security.SecureRandom
 import java.util.*
-import kotlin.text.Charsets
+import java.nio.charset.Charset
 
 /**
  * A secure string implementation that provides secure memory handling and string operations
  */
 class SecureString {
     private var data: CharArray? = null
-    private var charset: Charsets = Charsets.UTF_8
+    private var charset: Charset = Charsets.UTF_8
     
     companion object {
         private val secureRandom = SecureRandom()
@@ -19,7 +19,7 @@ class SecureString {
         /**
          * Create SecureString from regular string
          */
-        fun fromString(str: String, charset: Charsets = Charsets.UTF_8): SecureString {
+        fun fromString(str: String, charset: Charset = Charsets.UTF_8): SecureString {
             return SecureString(str.toCharArray(), charset)
         }
         
@@ -52,7 +52,7 @@ class SecureString {
     /**
      * Constructor with char array and charset
      */
-    constructor(data: CharArray, charset: Charsets) {
+    constructor(data: CharArray, charset: Charset) {
         this.data = data.copyOf()
         this.charset = charset
     }
@@ -67,7 +67,7 @@ class SecureString {
     /**
      * Constructor with string and charset
      */
-    constructor(str: String, charset: Charsets) {
+    constructor(str: String, charset: Charset) {
         this.data = str.toCharArray()
         this.charset = charset
     }
@@ -75,7 +75,7 @@ class SecureString {
     /**
      * Constructor with byte array and charset
      */
-    constructor(bytes: ByteArray, charset: Charsets = Charsets.UTF_8) {
+    constructor(bytes: ByteArray, charset: Charset = Charsets.UTF_8) {
         this.data = String(bytes, charset).toCharArray()
         this.charset = charset
     }
@@ -157,7 +157,7 @@ class SecureString {
     /**
      * Convert to byte array with specified charset
      */
-    fun toByteArray(charset: Charsets = this.charset): ByteArray {
+    fun toByteArray(charset: Charset = this.charset): ByteArray {
         return data?.let { String(it).toByteArray(charset) } ?: ByteArray(0)
     }
     
@@ -171,12 +171,12 @@ class SecureString {
     /**
      * Get charset
      */
-    fun getCharset(): Charsets = charset
+    fun getCharset(): Charset = charset
     
     /**
      * Set charset
      */
-    fun setCharset(charset: Charsets): SecureString {
+    fun setCharset(charset: Charset): SecureString {
         this.charset = charset
         return this
     }

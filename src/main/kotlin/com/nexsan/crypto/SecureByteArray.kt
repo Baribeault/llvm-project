@@ -5,7 +5,7 @@ import java.util.*
 import javax.crypto.Cipher
 import javax.crypto.spec.GCMParameterSpec
 import javax.crypto.spec.SecretKeySpec
-import kotlin.text.Charsets
+import java.nio.charset.Charset
 
 /**
  * A secure byte array implementation that provides encryption, decryption, and secure memory handling
@@ -27,7 +27,7 @@ class SecureByteArray {
         /**
          * Create SecureByteArray from string
          */
-        fun fromString(str: String, charset: Charsets = Charsets.UTF_8): SecureByteArray {
+        fun fromString(str: String, charset: Charset = Charsets.UTF_8): SecureByteArray {
             return SecureByteArray(str.toByteArray(charset))
         }
         
@@ -42,6 +42,7 @@ class SecureByteArray {
          * Generate a random encryption key
          */
         fun generateKey(keySize: Int = 256): ByteArray {
+            if (keySize <= 0) throw IllegalArgumentException("Key size must be positive")
             val key = ByteArray(keySize / 8)
             secureRandom.nextBytes(key)
             return key
@@ -125,9 +126,9 @@ class SecureByteArray {
      * Decrypt the data
      */
     fun decrypt(): SecureByteArray {
-        if (!encrypted) return this
         if (key == null) throw IllegalStateException("Decryption key not set")
         if (iv == null) throw IllegalStateException("IV not set")
+        if (!encrypted) return this
         
         val cipher = Cipher.getInstance(CIPHER_TRANSFORMATION)
         val keySpec = SecretKeySpec(key!!, AES_ALGORITHM)
@@ -179,7 +180,14 @@ class SecureByteArray {
     /**
      * Convert to string
      */
-    fun toString(charset: Charsets = Charsets.UTF_8): String {
+    override fun toString(): String {
+        return data?.let { String(it, Charsets.UTF_8) } ?: ""
+    }
+    
+    /**
+     * Convert to string with specified charset
+     */
+    fun toString(charset: Charset): String {
         return data?.let { String(it, charset) } ?: ""
     }
     

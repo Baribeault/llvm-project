@@ -1,18 +1,29 @@
 package com.nexsan.crypto
 
 import org.junit.jupiter.api.*
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import org.junit.jupiter.params.provider.ValueSource
+import java.nio.charset.Charset
 import java.util.*
 import java.util.stream.Stream
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class SecureStringTest {
+    
+    companion object {
+        @JvmStatic
+        fun charsetProvider(): Stream<Arguments> = Stream.of(
+            Arguments.of(Charsets.UTF_8),
+            Arguments.of(Charsets.UTF_16),
+            Arguments.of(Charsets.UTF_16BE),
+            Arguments.of(Charsets.UTF_16LE),
+            Arguments.of(Charsets.US_ASCII),
+            Arguments.of(Charsets.ISO_8859_1)
+        )
+    }
     
     private lateinit var testString: String
     private lateinit var testChars: CharArray
@@ -309,22 +320,10 @@ class SecureStringTest {
     @DisplayName("Character Encoding/Decoding Tests")
     inner class CharacterEncodingTests {
         
-        companion object {
-            @JvmStatic
-            fun charsetProvider(): Stream<Arguments> = Stream.of(
-                Arguments.of(Charsets.UTF_8),
-                Arguments.of(Charsets.UTF_16),
-                Arguments.of(Charsets.UTF_16BE),
-                Arguments.of(Charsets.UTF_16LE),
-                Arguments.of(Charsets.US_ASCII),
-                Arguments.of(Charsets.ISO_8859_1)
-            )
-        }
-        
         @ParameterizedTest
-        @MethodSource("charsetProvider")
+        @MethodSource("com.nexsan.crypto.SecureStringTest#charsetProvider")
         @DisplayName("toByteArray with different charsets")
-        fun testToByteArrayDifferentCharsets(charset: Charsets) {
+        fun testToByteArrayDifferentCharset(charset: Charset) {
             val secureString = SecureString(testString, charset)
             val bytes = secureString.toByteArray()
             val expected = testString.toByteArray(charset)
